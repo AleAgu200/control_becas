@@ -26,8 +26,8 @@ return new class extends Migration
         });
         Schema::create('becas', function (Blueprint $table) {
             $table->id();
-            $table->string('Tipo de Beca');
-            $table->float('Monto de la beca', 8, 8);
+            $table->string('tipo_de_beca');
+            $table->float('monto_de_la_beca', 8, 8);
             $table->integer('duracion')->default(12);
             $table->integer('codigo_planilla')->nullable();
         });
@@ -42,140 +42,140 @@ return new class extends Migration
             $table->string('telefono');
             $table->string('direccion');
             $table->boolean('estado')->default(true);
-            $table->date('Fecha de inicio');
-            $table->date('Fecha de finalizacion');
-            $table->string('id_beca');
+            $table->date('fecha_de_inicio');
+            $table->date('fecha_de_finalizacion');
+            $table->integer('id_beca');
             $table->unsignedBigInteger('centro_de_estudio_id'); // Add this lin
         });
 
         Beca::insert(
             [
                 [
-                    'Tipo de Beca' => 'Servicio Social, Quimicos Farmaceuticos',
-                    'Monto de la beca' => 4800.00,
+                    'tipo_de_beca' => 'Servicio Social, Quimicos Farmaceuticos',
+                    'monto_de_la_beca' => 4800.00,
                     'duracion' => 12,
                     'codigo_planilla' => 19
 
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Odontología',
-                    'Monto de la beca' => 5300.00,
+                    'tipo_de_beca' => 'Servicio Social, Odontología',
+                    'monto_de_la_beca' => 5300.00,
                     'duracion' => 12,
                     'codigo_planilla' => 14
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Enfemeras Profesionales',
-                    'Monto de la beca' => 3000.00,
+                    'tipo_de_beca' => 'Servicio Social, Enfemeras Profesionales',
+                    'monto_de_la_beca' => 3000.00,
                     'duracion' => 12,
                     'codigo_planilla' => 16
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Auxiliares de Enfermería',
-                    'Monto de la beca' => 3800.00,
+                    'tipo_de_beca' => 'Servicio Social, Auxiliares de Enfermería',
+                    'monto_de_la_beca' => 3800.00,
                     'duracion' => 12,
                     'codigo_planilla' => 17
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Médicos',
-                    'Monto de la beca' => 7744.00,
+                    'tipo_de_beca' => 'Servicio Social, Médicos',
+                    'monto_de_la_beca' => 7744.00,
                     'duracion' => 12,
                     'codigo_planilla' => 13
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Microbiología',
-                    'Monto de la beca' => 7000.00,
+                    'tipo_de_beca' => 'Servicio Social, Microbiología',
+                    'monto_de_la_beca' => 7000.00,
                     'duracion' => 12,
                     'codigo_planilla' => 15
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Internado Rotatorio de Medicina',
-                    'Monto de la beca' => 6600.00,
+                    'tipo_de_beca' => 'Servicio Social, Internado Rotatorio de Medicina',
+                    'monto_de_la_beca' => 6600.00,
                     'duracion' => 12,
                     'codigo_planilla' => 18
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Técnicos en Laboratorio',
-                    'Monto de la beca' => 4700.00,
+                    'tipo_de_beca' => 'Servicio Social, Técnicos en Laboratorio',
+                    'monto_de_la_beca' => 4700.00,
                     'duracion' => 12,
                     'codigo_planilla' => 10
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Técnicos en Rayos X',
-                    'Monto de la beca' => 4786.00,
+                    'tipo_de_beca' => 'Servicio Social, Técnicos en Rayos X',
+                    'monto_de_la_beca' => 4786.00,
                     'duracion' => 12,
                     'codigo_planilla' => 9
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Técnicos en Anestesia',
-                    'Monto de la beca' => 4786.00,
+                    'tipo_de_beca' => 'Servicio Social, Técnicos en Anestesia',
+                    'monto_de_la_beca' => 4786.00,
                     'duracion' => 12,
                     'codigo_planilla' => 11
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Técnico en Salud Ambiental',
-                    'Monto de la beca' => 4786.00,
+                    'tipo_de_beca' => 'Servicio Social, Técnico en Salud Ambiental',
+                    'monto_de_la_beca' => 4786.00,
                     'duracion' => 12,
                     'codigo_planilla' => 30
                 ],
                 [
-                    'Tipo de Beca' => 'Servicio Social, Licenciadas en Nutrición',
-                    'Monto de la beca' => 4786.00,
+                    'tipo_de_beca' => 'Servicio Social, Licenciadas en Nutrición',
+                    'monto_de_la_beca' => 4786.00,
                     'duracion' => 12,
                     'codigo_planilla' => 50
                 ],
                 [
-                    'Tipo de Beca' => 'Becas al Exterior',
-                    'Monto de la beca' => 14000.00,
+                    'tipo_de_beca' => 'Becas al Exterior',
+                    'monto_de_la_beca' => 14000.00,
                     'duracion' => 12,
                     'codigo_planilla' => 500
                 ],
                 [
-                    'Tipo de Beca' => 'Maestrías Nacionales',
-                    'Monto de la beca' => 15000.00,
-                    'duracion' => 12,
-                    'codigo_planilla' => 500
-
-                ],
-                [
-                    'Tipo de Beca' => 'Posgrados en Medicina',
-                    'Monto de la beca' => 21400.00,
+                    'tipo_de_beca' => 'Maestrías Nacionales',
+                    'monto_de_la_beca' => 15000.00,
                     'duracion' => 12,
                     'codigo_planilla' => 500
 
                 ],
                 [
-                    'Tipo de Beca' => 'Curso Técnicos en Laboratorio ',
-                    'Monto de la beca' => 950.00,
+                    'tipo_de_beca' => 'Posgrados en Medicina',
+                    'monto_de_la_beca' => 21400.00,
+                    'duracion' => 12,
+                    'codigo_planilla' => 500
+
+                ],
+                [
+                    'tipo_de_beca' => 'Curso Técnicos en Laboratorio ',
+                    'monto_de_la_beca' => 950.00,
                     'duracion' => 12,
                     'codigo_planilla' => 6
                 ],
                 [
-                    'Tipo de Beca' => 'Curso Técnicos en Anestesia ',
-                    'Monto de la beca' => 950.00,
+                    'tipo_de_beca' => 'Curso Técnicos en Anestesia ',
+                    'monto_de_la_beca' => 950.00,
                     'duracion' => 18,
                     'codigo_planilla' => 7
                 ],
                 [
-                    'Tipo de Beca' => 'Curso Técnicos en Rayos X ',
-                    'Monto de la beca' => 950.00,
+                    'tipo_de_beca' => 'Curso Técnicos en Rayos X ',
+                    'monto_de_la_beca' => 950.00,
                     'duracion' => 18,
                     'codigo_planilla' => 5
                 ],
                 [
-                    'Tipo de Beca' => 'Curso Auxiliares de Enfermería ',
-                    'Monto de la beca' => 950.00,
+                    'tipo_de_beca' => 'Curso Auxiliares de Enfermería ',
+                    'monto_de_la_beca' => 950.00,
                     'duracion' => 12,
                     'codigo_planilla' => 4
                 ],
                 [
-                    'Tipo de Beca' => 'Curso Técnicos en Salud Ambiental ',
-                    'Monto de la beca' => 950.00,
+                    'tipo_de_beca' => 'Curso Técnicos en Salud Ambiental ',
+                    'monto_de_la_beca' => 950.00,
                     'duracion' => 12,
                     'codigo_planilla' => 29
                 ],
                 [
-                    'Tipo de Beca' => 'Curso Técnicos Básicas en quirófano ',
-                    'Monto de la beca' => 950.00,
+                    'tipo_de_beca' => 'Curso Técnicos Básicas en quirófano ',
+                    'monto_de_la_beca' => 950.00,
                     'duracion' => 12,
                     'codigo_planilla' => 48
                 ],

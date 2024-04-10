@@ -9,22 +9,31 @@ const Table = ({ data }) => {
     const columns = React.useMemo(
         () => [
             {
-                Header: () => <InputLabel value={"Nombres"} />,
+                Header: () => (
+                    <InputLabel className="text-lg" value={"Nombres"} />
+                ),
                 accessor: "nombres",
                 Filter: DefaultColumnFilter,
             },
             {
-                Header: () => <InputLabel value={"Identidad"} />,
+                Header: () => (
+                    <InputLabel className="text-lg" value={"Identidad"} />
+                ),
                 accessor: "identidad",
                 Filter: DefaultColumnFilter,
             },
             {
-                Header: () => <InputLabel value={"Tipo de Beca"} />,
+                Header: () => (
+                    <InputLabel className="text-lg" value={"Tipo de Beca"} />
+                ),
                 accessor: "tipo_de_beca",
                 Filter: DefaultColumnFilter,
+                Cell: ({ value }) => <div className="text-left">{value}</div>,
             },
             {
-                Header: () => <InputLabel value={"Monto"} />,
+                Header: () => (
+                    <InputLabel className="text-lg" value={"Monto"} />
+                ),
                 accessor: "monto_de_la_beca",
                 Filter: DefaultColumnFilter,
                 Cell: ({ value }) =>
@@ -46,12 +55,19 @@ const Table = ({ data }) => {
                 },
             },
             {
-                Header: () => <InputLabel value={"Asignado a"} />,
+                Header: () => (
+                    <InputLabel
+                        className="text-lg"
+                        value={"Asignado a x lugar"}
+                    />
+                ),
                 accessor: "centro_de_estudio_id",
                 Filter: DefaultColumnFilter,
             },
             {
-                Header: () => <InputLabel value={"Fecha de Inicio"} />,
+                Header: () => (
+                    <InputLabel className="text-lg" value={"Fecha de Inicio"} />
+                ),
                 accessor: "fecha_de_inicio",
                 Filter: DefaultColumnFilter,
                 Cell: ({ value }) => {
@@ -60,7 +76,12 @@ const Table = ({ data }) => {
                 },
             },
             {
-                Header: () => <InputLabel value={"Fecha de Finalizacion"} />,
+                Header: () => (
+                    <InputLabel
+                        className="text-lg"
+                        value={"Fecha de Finalizacion"}
+                    />
+                ),
                 accessor: "fecha_de_finalizacion",
                 Filter: DefaultColumnFilter,
                 Cell: ({ value }) => {
@@ -92,7 +113,7 @@ const Table = ({ data }) => {
     } = useTable({ columns, data }, useFilters, usePagination); // Add usePagination here
     return (
         <section className="flex flex-col items-center justify-center">
-            <table {...getTableProps()} className=" ">
+            <table {...getTableProps()} className="">
                 <thead>
                     {headerGroups.map((headerGroup) => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -117,7 +138,7 @@ const Table = ({ data }) => {
                                 {row.cells.map((cell) => (
                                     <td
                                         {...cell.getCellProps()}
-                                        className="text-center"
+                                        className="text-left px-4 py-2 border border-gray-600"
                                     >
                                         {cell.render("Cell")}
                                     </td>
@@ -125,19 +146,18 @@ const Table = ({ data }) => {
                             </tr>
                         );
                     })}
- 
                 </tbody>
                 <tfoot>
-                        {footerGroups.map((group) => (
-                            <tr {...group.getFooterGroupProps()}>
-                                {group.headers.map((column) => (
-                                    <td {...column.getFooterProps()}>
-                                        {column.render("Footer")}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tfoot>
+                    {footerGroups.map((group) => (
+                        <tr {...group.getFooterGroupProps()}>
+                            {group.headers.map((column) => (
+                                <td {...column.getFooterProps()}>
+                                    {column.render("Footer")}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tfoot>
             </table>
             <div>
                 <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
@@ -205,6 +225,7 @@ function DefaultColumnFilter({
     return (
         <div>
             <TextInput
+                className="w-[10rem] h-8 px-2 my-2 mx-1"
                 value={filterValue || ""}
                 onChange={(e) => {
                     setFilter(e.target.value || undefined);

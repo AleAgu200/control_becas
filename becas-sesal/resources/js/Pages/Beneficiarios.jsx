@@ -10,12 +10,10 @@ const Beneficiarios = ({ auth, becarios }) => {
             <Head title="Beneficiarios" />
             <div>Beneficiarios</div>
             {data && (
-                <div className="">
+                <div className="text-sm">
                     <Table data={data} />
                 </div>
             )}
-
-            
         </AuthenticatedLayout>
     );
 };

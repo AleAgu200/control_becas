@@ -10,19 +10,28 @@ export default function Indicadores({
     montoEjecutar,
     beneficiarios,
     ejecucion,
+    periodo,
 }) {
+    const presupuesto = 120000000;
     return (
         <div className="flex flex-row gap-2 w-full items-center justify-center p-5 bg-white">
             <Card className="shadow-md grid gap-1.5 w-1/4">
                 <CardHeader>
                     <CardTitle>Monto a ejecutar</CardTitle>
                     <CardDescription>
-                        Monto a ser ejecutado por la cantidad de becas.
+                        Monto a ser ejecutado por la cantidad de becas {periodo}{" "}
+                        .
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center">
                     <div className="flex-1">
-                        <div className="font-semibold">{montoEjecutar}</div>
+                        <div className="font-semibold">
+                            {" "}
+                            {new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "HNL",
+                            }).format(montoEjecutar)}
+                        </div>
                         <div className="mt-1">Monto a ejecutar</div>
                     </div>
                     <CreditCardIcon className="w-8 h-8" />
@@ -52,10 +61,14 @@ export default function Indicadores({
                 </CardHeader>
                 <CardContent className="flex items-center gap-4">
                     <div className="flex flex-col items-center">
-                        <div className="uppercase tracking-wider">
-                            Prespuesto
+                        <div className="font-semibold">
+                            {" "}
+                            {new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "HNL",
+                            }).format(presupuesto)}
                         </div>
-                        <div className="font-semibold">Xmillones</div>
+                        <div className="mt-1">Presupuesto Anual</div>
                     </div>
                     <div className="h-8" />
                     <div className="flex flex-col items-center">

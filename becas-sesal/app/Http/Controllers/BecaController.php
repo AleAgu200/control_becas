@@ -32,17 +32,23 @@ class BecaController extends Controller
     }
     public function index()
     {
+        function returnTodosEstudiantesConBeca($id_beca)
+        {
+            $estudiantes = Estudiante::where('id_beca', $id_beca)->get();
+            $beca = Beca::find($id_beca);
+            $estudiantes->each(function ($estudiante) use ($beca) {
+                $estudiante->beca = $beca;
+            });
+            return $estudiantes;
+        }
         $resultados =  $this->reporteTrimestales(1, '2023-01-01', '2023-05-31', '2024-01-01', '2024-01-31');
         $becas = Beca::all();
         $estudiantes = Estudiante::all();
         return Inertia::render('Becas', ['becas' => $becas, 'resultados' => $resultados, 'estudiantes' => $estudiantes]);
     }
 
-    public function returnTodosEstudiantesConBeca($id_beca)
-    {
-        $estudiantes = Estudiante::where('id_beca', $id_beca)->with('beca')->get();
-        return $estudiantes;
-    }
+
+
     public function registrarBeca(Request $request)
     {
         // Validate the request data

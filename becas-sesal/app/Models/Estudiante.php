@@ -24,6 +24,7 @@ class Estudiante extends Model
         'Fecha de finalizacion',
         'id_beca',
         'centro_de_estudio_id',
+
     ];
 
     public function beca()

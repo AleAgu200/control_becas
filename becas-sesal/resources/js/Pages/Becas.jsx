@@ -15,8 +15,9 @@ import {
 } from "@/Components/ui/select";
 import InputLabel from "@/Components/InputLabel";
 import Indicadores from "@/Components/Indicadores";
+import { fetchReport } from "@/utils/fetchreports";
+import GraficoBecasPorMes from "@/Components/GraficoBecasPorMes";
 const Becas = ({ auth, becas, estudiantes }) => {
-    console.log("🚀 ~ Becas ~ estudiantes:", estudiantes);
     const [date1, setDate1] = React.useState(
         new Date(
             new Date().getFullYear() - 1,
@@ -24,13 +25,23 @@ const Becas = ({ auth, becas, estudiantes }) => {
             new Date().getDate()
         )
     );
+    const [reporte, setReporte] = React.useState(); //[montoEjecutar, beneficiarios, ejecucion, periodo
     const [date2, setDate2] = React.useState(
         new Date(new Date().getFullYear(), 11, 31)
     );
-    const [tipoDeBeca, setTipoDeBeca] = React.useState({});
+    const [tipoDeBeca, setTipoDeBeca] = React.useState({
+        id: 999,
+        tipo_de_beca: "Todas las becas",
+    });
     const [loading, setLoading] = React.useState(true);
     const [beneficiarios, setBeneficiarios] = React.useState([]);
+
     useEffect(() => {
+        /*         console.log("tipo de beca", tipoDeBeca);
+         */ /*         console.log("beneficiarios", beneficiarios);
+         */ /*         console.log("date1", date1);
+         */ /*         console.log("date2", date2);
+         */
         if (tipoDeBeca.id !== undefined) {
             const startDate = new Date(date1);
             startDate.setHours(0, 0, 0, 0);
@@ -50,18 +61,25 @@ const Becas = ({ auth, becas, estudiantes }) => {
                 estudianteEndDate.setHours(0, 0, 0, 0);
 
                 return (
-                    estudiante.id_beca == tipoDeBeca.id &&
+                    (tipoDeBeca.id === 999 ||
+                        estudiante.id_beca == tipoDeBeca.id) &&
                     estudianteStartDate >= startDate &&
                     estudianteEndDate <= endDate
                 );
-
-                //calcular el monto a ejecutar
-
-                //calcular la cantidad de beneficiarios
             });
 
             setBeneficiarios(filteredBeneficiarios);
-            console.log("Filtered Beneficiarios:", filteredBeneficiarios);
+
+            setBeneficiarios(filteredBeneficiarios);
+            fetchReport(tipoDeBeca.id, date1, date2)
+                .then((data) => {
+                    setReporte(data);
+                    /*                     console.log(reporte);
+                     */
+                })
+                .catch((error) => {
+                    console.error("Error fetching report:", error);
+                });
         } else if (tipoDeBeca.id === undefined) {
             const startDate = new Date(date1);
             startDate.setHours(0, 0, 0, 0);
@@ -87,9 +105,9 @@ const Becas = ({ auth, becas, estudiantes }) => {
             });
 
             setBeneficiarios(filteredBeneficiarios);
-            console.log("Filtered Beneficiarios:", filteredBeneficiarios);
         }
     }, [tipoDeBeca, estudiantes, date1, date2]);
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Becas" />
@@ -97,6 +115,7 @@ const Becas = ({ auth, becas, estudiantes }) => {
                 <div className="flex flex-row items-start justify-center  bg-white p-5">
                     <div className="flex flex-col items-center justify-center">
                         <InputLabel value={"Tipo de Beca"} />
+
                         <Select
                             className=""
                             onValueChange={(value) => setTipoDeBeca(value)}
@@ -113,7 +132,7 @@ const Becas = ({ auth, becas, estudiantes }) => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem value={{}}>
+                                    <SelectItem value={{ id: 999 }}>
                                         <SelectLabel>
                                             Todas las becas
                                         </SelectLabel>
@@ -147,7 +166,16 @@ const Becas = ({ auth, becas, estudiantes }) => {
                         </div>
                     </div>
                 </div>
-                <Indicadores />
+                <Indicadores
+                    beneficiarios={beneficiarios?.length}
+                    periodo={reporte?.period}
+                    montoEjecutar={reporte?.grandTotalAmount}
+                />
+                <GraficoBecasPorMes
+                    beca={tipoDeBeca.tipo_de_beca}
+                    date1={date1}
+                    date2={date2}
+                />
             </div>
         </AuthenticatedLayout>
     );

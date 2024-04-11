@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BecaController;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\reportesController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -36,6 +37,11 @@ Route::get('/beneficiarios', [EstudianteController::class, 'index'])
 Route::get('/centros', function () {
     return Inertia::render('Centros');
 })->middleware(['auth', 'verified'])->name('centros');
+
+
+Route::get('/reportes/{id_beca}/{startDate}/{endDate}', [reportesController::class, 'generateReport']);
+Route::get('/reportes/historico', [reportesController::class, 'generateAllHistoricReports']);
+
 
 
 

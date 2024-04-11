@@ -31,4 +31,22 @@ class Beca extends Model
     {
         return $this->attributes['monto_de_la_beca'];
     }
+    public function returnTodosEstudiantesConBeca($id_beca)
+    {
+        $estudiantes = Estudiante::where('id_beca', $id_beca)->with('beca')->get();
+        return $estudiantes;
+    }
+    public function returnMonthlyReport($id_beca, $fecha1, $fecha2)
+    {
+        $estudiantes = Estudiante::where('id_beca', $id_beca)->with('beca')->get();
+        $reporte = [];
+        foreach ($estudiantes as $estudiante) {
+        }
+        return $reporte;
+    }
+
+    public function estudiantes()
+    {
+        return $this->hasMany(Estudiante::class, 'id_beca');
+    }
 }

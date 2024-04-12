@@ -41,6 +41,7 @@ Route::get('/centros', function () {
 
 Route::get('/reportes/{id_beca}/{startDate}/{endDate}', [reportesController::class, 'generateReport']);
 Route::get('/reportes/historico', [reportesController::class, 'generateAllHistoricReports']);
+Route::get('/scholarships', [reportesController::class, 'getScholarshipReport']);
 
 
 

@@ -7,71 +7,82 @@ use App\Models\Beca;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class reportesController extends Controller
 {
-    public function generateReportOld($id_beca, $startDate, $endDate)
-    {
-        $startDate = new DateTime($startDate);
-        $endDate = new DateTime($endDate);
-        $period = $startDate->diff($endDate);
-
-        $beca = Beca::with('estudiantes')->find($id_beca);
-
-        if (!$beca) {
-            return 'Beca not found';
-        }
-
-        $report = [];
-        foreach ($beca->estudiantes as $estudiante) {
-            // Convert dates to Carbon instances for comparison
-            $estudianteStartDate = Carbon::parse($estudiante->fecha_de_inicio);
-            $estudianteEndDate = Carbon::parse($estudiante->fecha_de_finalizacion);
-            $startDate = Carbon::parse($startDate);
-            $endDate = Carbon::parse($endDate);
-
-            // Check if the student's scholarship period overlaps with the specified date range
-            if ($estudianteStartDate->lessThanOrEqualTo($endDate) && $estudianteEndDate->greaterThanOrEqualTo($startDate)) {
-                $totalAmount = $beca->monto_de_la_beca * $beca->duracion;
-
-                // Calculate prorated amount for the first month
-                if ($estudianteStartDate->greaterThan($startDate)) {
-                    $daysInMonth = $estudianteStartDate->daysInMonth;
-                    $remainingDays = $daysInMonth - $estudianteStartDate->day + 1;
-                    $monthlyAmount = $beca->monto_de_la_beca;
-                    $proratedAmount = ($monthlyAmount / $daysInMonth) * $remainingDays;
-
-                    // Add prorated amount to total
-                    $totalAmount += $proratedAmount;
-                }
-
-                $report[] = [
-                    'estudiante' => $estudiante->nombres . ' ' . $estudiante->apellidos,
-                    'totalAmount' => $totalAmount,
-                ];
-
-                // Calculate prorated amount for the last month
-
-                $totalAmount = array_reduce($report, function ($carry, $item) {
-                    return $carry + $item['totalAmount'];
-                }, 0);
-
-                $totalAmount = round($totalAmount, 2);
-            }
-        }
-
-        return response()->json([
-            'report' => $report,
-            'period' => $period->format('%m meses %d dias'),
-            'totalAmount' => $totalAmount,
-        ]);
-    }
-
     public function generateReport($id_beca = null, $startDate, $endDate)
     {
         $startDate = Carbon::parse($startDate);
         $endDate = Carbon::parse($endDate);
         $period = $startDate->diff($endDate)->format('%m meses %d días');
+
+        // Fetch the scholarships, filtering by id_beca if not '999'
+        $query = Beca::with(['estudiantes' => function ($query) use ($startDate, $endDate) {
+            $query->where('fecha_de_inicio', '>=', $startDate->toDateString())
+                ->where('fecha_de_finalizacion', '<=', $endDate->toDateString());
+        }]);
+
+        if ($id_beca != 999) {
+            $query->where('id', $id_beca);
+        }
+
+        $becas = $query->get();
+        $allReports = [];
+        $grandTotalAmount = 0;
+
+        foreach ($becas as $beca) {
+            $report = [];
+            $totalAmountForBeca = 0;
+
+            foreach ($beca->estudiantes as $estudiante) {
+                $estudianteStartDate = Carbon::parse($estudiante->fecha_de_inicio);
+                $estudianteEndDate = Carbon::parse($estudiante->fecha_de_finalizacion);
+
+                // Ensure that date ranges overlap and calculate accordingly
+                if ($estudianteStartDate < $endDate && $estudianteEndDate > $startDate) {
+                    // Adjust start and end dates to within the defined range
+                    $effectiveStartDate = $estudianteStartDate->max($startDate);
+                    $effectiveEndDate = $estudianteEndDate->min($endDate);
+
+                    // Calculate the total months of scholarship coverage, using the beca's defined duration
+                    $totalMonths = min($effectiveStartDate->floatDiffInMonths($effectiveEndDate), $beca->duracion);
+
+                    // Calculate the total amount based on the effective months and the beca's monthly amount
+                    $totalAmount = $totalMonths * $beca->monto_de_la_beca;
+                    $totalAmount = min($totalAmount, $beca->monto_de_la_beca * $beca->duracion);
+
+                    $report[] = [
+                        'estudiante' => $estudiante->nombres . ' ' . $estudiante->apellidos,
+                        'months' => floor($totalMonths), // Using floor to simulate SQL's behavior
+                        'amount' => round($totalAmount, 2)
+                    ];
+
+                    $totalAmountForBeca += $totalAmount;
+                }
+            }
+
+            $allReports[] = [
+                'beca' => $beca->tipo_de_beca,
+                'report' => $report,
+                'totalAmount' => round($totalAmountForBeca, 2),
+            ];
+
+            $grandTotalAmount += $totalAmountForBeca;
+        }
+
+        return response()->json([
+            'allReports' => $allReports,
+            'period' => $period,
+            'grandTotalAmount' => round($grandTotalAmount, 2),
+        ]);
+    }
+
+    public function generateReportOld($id_beca = null, $startDate, $endDate)
+    {
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
+        $period = $startDate->diff($endDate)->format('%y años,%m meses ,%d días');
 
         // Check if the id_beca is 999, if so, get all scholarships, otherwise get the specified scholarship
         $query = Beca::with('estudiantes');
@@ -91,25 +102,35 @@ class reportesController extends Controller
                 $estudianteStartDate = Carbon::parse($estudiante->fecha_de_inicio);
                 $estudianteEndDate = Carbon::parse($estudiante->fecha_de_finalizacion);
 
-                // Check if the student's scholarship period overlaps with the specified date range
-                if ($estudianteStartDate->lessThanOrEqualTo($endDate) && $estudianteEndDate->greaterThanOrEqualTo($startDate)) {
-                    // Calculate the actual duration of the scholarship within the specified date range
-                    $actualStartDate = $estudianteStartDate->max($startDate);
-                    $actualEndDate = $estudianteEndDate->min($endDate);
-                    $actualDuration = $actualStartDate->diffInDays($actualEndDate) + 1;
+                $currentDate = $estudianteStartDate->copy();
 
-                    // Calculate the daily scholarship amount
-                    $dailyAmount = $beca->monto_de_la_beca / $estudianteStartDate->daysInMonth;
+                while ($currentDate->lessThanOrEqualTo($estudianteEndDate) && $currentDate->lessThanOrEqualTo($endDate)) {
+                    $monthEnd = $currentDate->copy()->endOfMonth();
+                    $totalMonthAmount = 0;
 
-                    // Calculate the total scholarship amount based on the actual duration
-                    $totalAmount = $dailyAmount * $actualDuration;
+                    if ($currentDate->isSameDay($currentDate->copy()->startOfMonth()) && $monthEnd->lessThanOrEqualTo($estudianteEndDate) && $monthEnd->lessThanOrEqualTo($endDate)) {
+                        // Full month within the range
+                        $totalMonthAmount = $beca->monto_de_la_beca;
+                    } else {
+                        // Partial month at the start or end of the period
+                        $effectiveStartDate = $currentDate->max($startDate);
+                        $effectiveEndDate = $monthEnd->min($estudianteEndDate)->min($endDate);
+                        $daysInMonth = $currentDate->daysInMonth;
+                        $daysActive = $effectiveStartDate->diffInDays($effectiveEndDate) + 1;
+                        $dailyAmount = $beca->monto_de_la_beca / $daysInMonth;
+                        $totalMonthAmount = $dailyAmount * $daysActive;
+                    }
 
                     $report[] = [
                         'estudiante' => $estudiante->nombres . ' ' . $estudiante->apellidos,
-                        'totalAmount' => round($totalAmount, 2),
+                        'month' => $currentDate->format('Y-m'),
+                        'amount' => round($totalMonthAmount, 2)
                     ];
 
-                    $totalAmountForBeca += $totalAmount;
+                    $totalAmountForBeca += $totalMonthAmount;
+
+                    // Move to the next month
+                    $currentDate->addMonth()->startOfMonth();
                 }
             }
 
@@ -186,5 +207,29 @@ class reportesController extends Controller
         }
 
         return response()->json($reports, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function getScholarshipReport(Request $request)
+    {
+        // Retrieve query parameters
+        $start_date = $request->input('start_date', '2023-01-01'); // Default if not provided
+        $end_date = $request->input('end_date', '2024-02-29'); // Default if not provided
+        $scholarship_id = $request->input('scholarship_id', 1); // Default if not provided
+
+        // Perform the query using Query Builder with raw SQL for julianday calculations
+        $results = DB::table('estudiantes')
+            ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
+            ->select(
+                'estudiantes.*',
+                DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375) AS months"),
+                DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375)) * becas.monto_de_la_beca AS total")
+            )
+            ->where('estudiantes.id_beca', '=', $scholarship_id)
+            ->where('fecha_de_inicio', '>=', $start_date)
+            ->where('fecha_de_inicio', '<=', $end_date)
+            ->get();
+
+        // Return results as JSON
+        return response()->json($results);
     }
 }

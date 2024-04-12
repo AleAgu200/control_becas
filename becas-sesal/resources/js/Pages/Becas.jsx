@@ -74,8 +74,7 @@ const Becas = ({ auth, becas, estudiantes }) => {
             fetchReport(tipoDeBeca.id, date1, date2)
                 .then((data) => {
                     setReporte(data);
-                    /*                     console.log(reporte);
-                     */
+                    console.log(reporte);
                 })
                 .catch((error) => {
                     console.error("Error fetching report:", error);
@@ -182,3 +181,11 @@ const Becas = ({ auth, becas, estudiantes }) => {
 };
 
 export default Becas;
+
+
+const datePicker = () => {
+  return (
+    <div>Becas</div>
+  )
+}
+

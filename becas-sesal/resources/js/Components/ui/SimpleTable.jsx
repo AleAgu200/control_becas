@@ -49,7 +49,13 @@ export default function SimpleTable({ data }) {
         return <div>Loading...</div>; // Or render a loading spinner
     }
 
-    const totalPages = Math.ceil(currentData.length / perPage);
+    const totalPages = Math.ceil(data.results.length / perPage);
+    const handlePrevious = () => {
+        if (page > 1) setPage(page - 1);
+    };
+    const handleNext = () => {
+        if (page < totalPages) setPage(page + 1);
+    };
     return (
         <Card>
             <CardHeader className="px-7">
@@ -103,52 +109,27 @@ export default function SimpleTable({ data }) {
                     </TableBody>
                 </Table>
             </CardContent>
-            <SimpleTablePagination
-                page={page}
-                setPage={setPage}
-                totalPages={totalPages}
-            />
+            <div>
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious
+                                href="javascript:void(0)"
+                                onClick={handlePrevious}
+                            />
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink>{page}</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationEllipsis />
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationNext onClick={handleNext} />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            </div>
         </Card>
     );
 }
-
-const SimpleTablePagination = ({ page, setPage, totalPages }) => {
-    const handlePrevious = (event) => {
-        console.log("🚀 ~ SimpleTablePagination ~ page:", page);
-
-        event.preventDefault();
-        if (page > 1) setPage(page - 1);
-    };
-
-    const handleNext = (event) => {
-        event.preventDefault();
-        if (page < totalPages) setPage(page + 1);
-    };
-
-    return (
-        <div>
-            <Pagination>
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious
-                            href="javascript:void(0)"
-                            onClick={handlePrevious}
-                        />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink>{page}</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationNext
-                            href="javascript:void(0)"
-                            onClick={handleNext}
-                        />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
-        </div>
-    );
-};

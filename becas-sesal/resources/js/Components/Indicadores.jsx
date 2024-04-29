@@ -12,6 +12,7 @@ export default function Indicadores({
     ejecucion,
     periodo,
 }) {
+    console.log("🚀 ~ montoEjecutar:", montoEjecutar);
     const presupuesto = 120000000;
     return (
         <div className="flex flex-row gap-2 w-full items-center justify-center p-5 bg-white">

@@ -37,7 +37,6 @@ const GraficoBecasPorMes = ({ beca, date1, date2 }) => {
 
     useEffect(() => {
         axios.get("/reportes/historico").then((response) => {
-            console.log("Original data:", response.data);
             // Filter by "beca"
             const filteredByBeca = response.data.filter(
                 (item) => item.beca === beca
@@ -60,8 +59,6 @@ const GraficoBecasPorMes = ({ beca, date1, date2 }) => {
     if (loading) {
         return <div>Loading...</div>;
     }
-
-    console.log("Filtered data:", data);
 
     return (
         <Card className="w-[50%] border border-slate-300 rounded shadow-lg">

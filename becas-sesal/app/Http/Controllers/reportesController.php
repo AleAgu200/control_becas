@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Beca;
 use Carbon\Carbon;
+use DateInterval;
+use DatePeriod;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -209,7 +211,7 @@ class reportesController extends Controller
         return response()->json($reports, 200, [], JSON_PRETTY_PRINT);
     }
 
-    public function getScholarshipReport(Request $request)
+    public function getScholarshipReportSemiCorrect(Request $request)
     {
         // Retrieve query parameters
         $start_date = $request->input('start_date', '2023-01-01'); // Default if not provided
@@ -229,7 +231,131 @@ class reportesController extends Controller
             ->where('fecha_de_inicio', '<=', $end_date)
             ->get();
 
+        /* calculate the whole amount */
+        $total = 0;
+        foreach ($results as $result) {
+            $total += $result->total;
+        }
+
         // Return results as JSON
-        return response()->json($results);
+        return response()->json([
+            'results' => $results,
+            'total' => $total,
+        ]);
+    }
+
+    public function getScholarshipReport(Request $request)
+    {
+        // Retrieve query parameters
+        $start_date = $request->input('start_date', '2023-01-01'); // Default if not provided
+        $end_date = $request->input('end_date', '2024-02-29'); // Default if not provided
+        $scholarship_id = $request->input('scholarship_id', 1); // Default if not provided
+
+        // Fetch the student and scholarship data
+        $results = DB::table('estudiantes')
+            ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
+            ->select(
+                'estudiantes.*',
+                'becas.monto_de_la_beca',
+                'estudiantes.fecha_de_inicio',
+                DB::raw("MIN(estudiantes.fecha_de_finalizacion, '$end_date') as fecha_de_finalizacion")
+            )
+            ->where('estudiantes.id_beca', '=', $scholarship_id)
+            ->where('fecha_de_inicio', '>=', $start_date)
+            ->where('fecha_de_inicio', '<=', $end_date)
+            ->get();
+
+        $total = 0;
+
+        // Calculate the total amount for each student
+        foreach ($results as $result) {
+            $startDate = Carbon::parse($result->fecha_de_inicio);
+            $endDate = Carbon::parse($result->fecha_de_finalizacion);
+
+            // Calculate the total months of scholarship coverage
+            $totalMonths = min($startDate->floatDiffInMonths($endDate), 12);
+
+            // Calculate the total amount based on the effective months and the beca's monthly amount
+            $totalAmount = $totalMonths * $result->monto_de_la_beca;
+            $totalAmount = min($totalAmount, $result->monto_de_la_beca * 12);
+
+            $result->months = floor($totalMonths); // Using floor to simulate SQL's behavior
+            $result->total = round($totalAmount, 2);
+
+            $total += $totalAmount;
+        }
+
+        // Return results as JSON
+        return response()->json([
+            'results' => $results,
+            'total' => $total,
+            'cantidad' => count($results)
+        ]);
+    }
+
+    public function getTotalcholarshipReport(Request $request)
+    {
+        // Retrieve query parameters
+        $start_date = $request->input('start_date', '2023-01-01'); // Default if not provided
+        $end_date = $request->input('end_date', '2024-02-29'); // Default if not provided
+        $beca_id = $request->input('scholarship_id'); // Retrieve the 'scholarship_id' parameter
+
+        // Perform the query using Query Builder with raw SQL for julianday calculations
+        $results = DB::table('estudiantes')
+            ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
+            ->select(
+                'estudiantes.*',
+                DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375) AS months"),
+                DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375)) * becas.monto_de_la_beca AS total")
+            )
+            ->where('fecha_de_inicio', '>=', $start_date)
+            ->where('fecha_de_inicio', '<=', $end_date)
+            ->where('estudiantes.id_beca', $beca_id) // Filter by 'beca'
+            ->get();
+
+        /* calculate the whole amount */
+        $total = 0;
+        foreach ($results as $result) {
+            $total += $result->total;
+        }
+
+        // Return results as JSON
+        return response()->json([
+            'results' => $results,
+            'total' => $total,
+            'cantidad' => count($results)
+        ]);
+    }
+
+    public function getTotalcholarshipReportWihoutID(Request $request)
+    {
+        // Retrieve query parameters
+        $start_date = $request->input('start_date', '2023-01-01'); // Default if not provided
+        $end_date = $request->input('end_date', '2024-02-29'); // Default if not provided
+
+        // Perform the query using Query Builder with raw SQL for julianday calculations
+        $results = DB::table('estudiantes')
+            ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
+            ->select(
+                'estudiantes.*',
+                DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375) AS months"),
+                DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375)) * becas.monto_de_la_beca AS total")
+            )
+            ->where('fecha_de_inicio', '>=', $start_date)
+            ->where('fecha_de_inicio', '<=', $end_date)
+            ->get();
+
+        /* calculate the whole amount */
+        $total = 0;
+        foreach ($results as $result) {
+            $total += $result->total;
+        }
+
+        // Return results as JSON
+        return response()->json([
+            'results' => $results,
+            'total' => $total,
+            'cantidad' => count($results)
+        ]);
     }
 }

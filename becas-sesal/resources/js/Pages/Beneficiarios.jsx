@@ -8,9 +8,8 @@ const Beneficiarios = ({ auth, becarios }) => {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Beneficiarios" />
-            <div>Beneficiarios</div>
             {data && (
-                <div className="text-sm">
+                <div className="text-sm mt-5">
                     <Table data={data} />
                 </div>
             )}

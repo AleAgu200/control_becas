@@ -21,14 +21,14 @@ export default function Authenticated({ user, header, children }) {
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            {/*                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("dashboard")}
                                     active={route().current("dashboard")}
                                 >
                                     Dashboard
                                 </NavLink>
-                            </div>
+                            </div> */}
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("becas")}
@@ -45,12 +45,20 @@ export default function Authenticated({ user, header, children }) {
                                     Beneficiarios
                                 </NavLink>
                             </div>
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            {/*                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("centros")}
                                     active={route().current("centros")}
                                 >
                                     Centros de Estudio
+                                </NavLink>
+                            </div> */}
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink
+                                    href={route("agregar")}
+                                    active={route().current("agregar")}
+                                >
+                                    Agregar Información
                                 </NavLink>
                             </div>
                         </div>

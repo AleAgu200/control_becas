@@ -22,31 +22,26 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
+
 Route::get('/becas', [BecaController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('becas');
-
-
-
 Route::get('/beneficiarios', [EstudianteController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('beneficiarios');
-
-
-
 Route::get('/centros', function () {
     return Inertia::render('Centros');
 })->middleware(['auth', 'verified'])->name('centros');
 
+Route::get('/agregar', function () {
+    return Inertia::render('AddData');
+})->middleware(['auth', 'verified'])->name('agregar');
 
 Route::get('/reportes/{id_beca}/{startDate}/{endDate}', [reportesController::class, 'generateReport']);
 Route::get('/reportes/historico', [reportesController::class, 'generateAllHistoricReports']);
 Route::get('/scholarships', [reportesController::class, 'getScholarshipReport']);
-
-
-
-
-
+Route::get('/getTotalcholarshipReport', [reportesController::class, 'getTotalcholarshipReport']);
+Route::get('/getTotalcholarshipReportWihoutID', [reportesController::class, 'getTotalcholarshipReportWihoutID']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -54,7 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
+Route::post('/estudiantes', [EstudianteController::class, 'registrarEstudiante'])->name('estudiantes.store');
 
 
 require __DIR__ . '/auth.php';

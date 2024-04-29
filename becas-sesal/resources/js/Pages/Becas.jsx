@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import InputDatePicker from "@/Components/InputDatePicker";
+import SimpleTable from "@/Components/ui/SimpleTable";
 
 import {
     Select,
@@ -15,7 +16,11 @@ import {
 } from "@/Components/ui/select";
 import InputLabel from "@/Components/InputLabel";
 import Indicadores from "@/Components/Indicadores";
-import { fetchReport } from "@/utils/fetchreports";
+import {
+    fetchReport,
+    fetchReportOnlyDates,
+    fetchReportV2,
+} from "@/utils/fetchreports";
 import GraficoBecasPorMes from "@/Components/GraficoBecasPorMes";
 const Becas = ({ auth, becas, estudiantes }) => {
     const [date1, setDate1] = React.useState(
@@ -30,7 +35,7 @@ const Becas = ({ auth, becas, estudiantes }) => {
         new Date(new Date().getFullYear(), 11, 31)
     );
     const [tipoDeBeca, setTipoDeBeca] = React.useState({
-        id: 999,
+        id: undefined,
         tipo_de_beca: "Todas las becas",
     });
     const [loading, setLoading] = React.useState(true);
@@ -70,11 +75,9 @@ const Becas = ({ auth, becas, estudiantes }) => {
 
             setBeneficiarios(filteredBeneficiarios);
 
-            setBeneficiarios(filteredBeneficiarios);
-            fetchReport(tipoDeBeca.id, date1, date2)
+            fetchReportV2(tipoDeBeca.id, date1, date2)
                 .then((data) => {
                     setReporte(data);
-                    console.log(reporte);
                 })
                 .catch((error) => {
                     console.error("Error fetching report:", error);
@@ -103,6 +106,15 @@ const Becas = ({ auth, becas, estudiantes }) => {
                 );
             });
 
+            fetchReportOnlyDates(date1, date2)
+                .then((data) => {
+                    setReporte(data);
+                    console.log("🚀 ~ .then ~ data:", data);
+                })
+                .catch((error) => {
+                    console.error("Error fetching report:", error);
+                });
+
             setBeneficiarios(filteredBeneficiarios);
         }
     }, [tipoDeBeca, estudiantes, date1, date2]);
@@ -121,7 +133,7 @@ const Becas = ({ auth, becas, estudiantes }) => {
                         >
                             <SelectTrigger className="w-[300px] rounded shadow-md">
                                 <SelectValue
-                                    placeholder="Seleccion el tipo de beca"
+                                    placeholder="Seleccione el tipo de beca"
                                     className=""
                                 >
                                     {tipoDeBeca.tipo_de_beca
@@ -168,24 +180,12 @@ const Becas = ({ auth, becas, estudiantes }) => {
                 <Indicadores
                     beneficiarios={beneficiarios?.length}
                     periodo={reporte?.period}
-                    montoEjecutar={reporte?.grandTotalAmount}
+                    montoEjecutar={reporte?.total}
                 />
-                <GraficoBecasPorMes
-                    beca={tipoDeBeca.tipo_de_beca}
-                    date1={date1}
-                    date2={date2}
-                />
+                <SimpleTable data={reporte}></SimpleTable>
             </div>
         </AuthenticatedLayout>
     );
 };
 
 export default Becas;
-
-
-const datePicker = () => {
-  return (
-    <div>Becas</div>
-  )
-}
-

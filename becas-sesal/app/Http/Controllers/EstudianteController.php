@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class EstudianteController extends Controller
@@ -22,26 +23,33 @@ class EstudianteController extends Controller
 
     public function registrarEstudiante(Request $request)
     {
-        // Validate the request data
+
         $data = $request->validate([
             'nombres' => 'required|string|max:255',
-            'identidad' => 'required|string|max:13|unique:estudiantes|regex:/^[0-9]{4}-[0-9]{4}-[0-9]{5}$/',
             'apellidos' => 'required|string|max:255',
+            'identidad' => 'required|string|max:13|unique:estudiantes,identidad|regex:/^[0-9]{4}[0-9]{4}[0-9]{5}$/',
             'carnet' => 'nullable|string|max:255',
             'correo' => 'required|string|email|max:255',
             'telefono' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
-            'tipo de estudio (grado, posgrado o diplomado)' => 'required|string|max:255',
-            'semestre' => 'required|string|max:255',
-            'estado' => 'required|string|max:255',
+            'estado' => 'required|numeric|max:1',
             'id_beca' => 'required|exists:becas,id',
-            'centro_de_estudio_id' => 'required|exists:centros_de_estudio,id',
+            'centro_de_estudio_id' => 'required|numeric',
+            'fecha_de_inicio' => 'required|date',
+            'fecha_de_finalizacion' => 'required|date',
+
         ]);
 
         // Create a new Estudiante record
-        Estudiante::create($data);
+        try {
+            $estudiante = Estudiante::create($data);
+            Log::info('Estudiante registrado correctamente');
+        } catch (\Exception $e) {
+            Log::error('Error al registrar el estudiante: ' . $e->getMessage());
+            return redirect()->back()->withErrors('Error al registrar el estudiante');
+        }
 
         // Redirect back to the student list page
-        return redirect()->route('estudiantes.index');
+        return redirect()->route('beneficiarios');
     }
 }

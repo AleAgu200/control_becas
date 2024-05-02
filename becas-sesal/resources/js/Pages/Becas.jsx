@@ -143,7 +143,7 @@ const Becas = ({ auth, becas, estudiantes }) => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem value={{ id: 999 }}>
+                                    <SelectItem value={{ id: undefined }}>
                                         <SelectLabel>
                                             Todas las becas
                                         </SelectLabel>
@@ -178,7 +178,7 @@ const Becas = ({ auth, becas, estudiantes }) => {
                     </div>
                 </div>
                 <Indicadores
-                    beneficiarios={beneficiarios?.length}
+                    beneficiarios={reporte?.results.length}
                     periodo={reporte?.period}
                     montoEjecutar={reporte?.total}
                 />

@@ -12,7 +12,8 @@ export default function Indicadores({
     ejecucion,
     periodo,
 }) {
-    console.log("🚀 ~ montoEjecutar:", montoEjecutar);
+    console.log("🚀 ~ beneficiarios:", beneficiarios);
+
     const presupuesto = 120000000;
     return (
         <div className="flex flex-row gap-2 w-full items-center justify-center p-5 bg-white">
@@ -73,7 +74,6 @@ export default function Indicadores({
                     </div>
                     <div className="h-8" />
                     <div className="flex flex-col items-center">
-                        <div className="uppercase tracking-wider">Gastos</div>
                         <div className="font-semibold">{ejecucion}</div>
                     </div>
                 </CardContent>

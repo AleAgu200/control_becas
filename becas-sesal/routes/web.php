@@ -42,6 +42,8 @@ Route::get('/reportes/historico', [reportesController::class, 'generateAllHistor
 Route::get('/scholarships', [reportesController::class, 'getScholarshipReport']);
 Route::get('/getTotalcholarshipReport', [reportesController::class, 'getTotalcholarshipReport']);
 Route::get('/getTotalcholarshipReportWihoutID', [reportesController::class, 'getTotalcholarshipReportWihoutID']);
+Route::get('/getTotalMonthlyReport', [reportesController::class, 'getTotalMonthlyReport']);
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -145,7 +145,7 @@ function CreateStudent() {
                             id={key}
                             name={key}
                             value={data[key]}
-                            className="mt-1 block w-full"
+                            className="mt-1 block w-full rounded"
                             onChange={(e) => setData(key, e.target.value)}
                             required
                         >

@@ -51,10 +51,11 @@ const Table = ({ data }) => {
                         [info.rows]
                     );
 
-                    return <>Total: {total}</>;
+                    /*                     return <>Total: {total}</>;
+                     */
                 },
             },
-            {
+            /*             {
                 Header: () => (
                     <InputLabel
                         className="text-lg"
@@ -63,7 +64,7 @@ const Table = ({ data }) => {
                 ),
                 accessor: "centro_de_estudio_id",
                 Filter: DefaultColumnFilter,
-            },
+            }, */
             {
                 Header: () => (
                     <InputLabel className="text-lg" value={"Fecha de Inicio"} />
@@ -138,7 +139,7 @@ const Table = ({ data }) => {
                                 {row.cells.map((cell) => (
                                     <td
                                         {...cell.getCellProps()}
-                                        className="text-left px-4 py-2 border border-gray-600"
+                                        className="text-left px-4 py-2 border rounded border-gray-600"
                                     >
                                         {cell.render("Cell")}
                                     </td>

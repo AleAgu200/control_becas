@@ -399,4 +399,64 @@ class reportesController extends Controller
         // Return results as JSON
         return response()->json($monthlyResults);
     }
+    public function getTotalMonthlyReportByScholarship(Request $request)
+    {
+        // Retrieve query parameters
+        $year = $request->input('year', date('Y')); // Default to current year if not provided
+
+        // Retrieve all scholarship ids
+        $scholarshipIds = DB::table('becas')->pluck('id');
+
+        // Initialize an array to hold the results for each scholarship
+        $scholarshipResults = [];
+
+        // Loop over each scholarship
+        foreach ($scholarshipIds as $scholarshipId) {
+            // Initialize an array to hold the results for each month
+            $monthlyResults = [];
+
+            // Loop over each month
+            for ($month = 1; $month <= 12; $month++) {
+                // Calculate the start and end dates for the month
+                $start_date = date('Y-m-01', strtotime("$year-$month-01"));
+                $end_date = date('Y-m-t', strtotime("$year-$month-01"));
+
+                // Perform the query using Query Builder with raw SQL for julianday calculations
+                $results = DB::table('estudiantes')
+                    ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
+                    ->select(
+                        'estudiantes.*',
+                        DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(MAX(fecha_de_inicio, '$start_date'))) / 30.4375) AS months"),
+                        DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(MAX(fecha_de_inicio, '$start_date'))) / 30.4375)) * becas.monto_de_la_beca AS total")
+                    )
+                    ->where('fecha_de_inicio', '<=', $end_date)
+                    ->where('fecha_de_finalizacion', '>=', $start_date)
+                    ->where('estudiantes.id_beca', $scholarshipId)
+                    ->get();
+
+                /* calculate the whole amount */
+                $total = 0;
+                foreach ($results as $result) {
+                    $total += $result->total;
+                }
+
+                // Add the results for the month to the monthlyResults array
+                $monthlyResults[] = [
+                    'month' => $month,
+                    'results' => $results,
+                    'total' => $total,
+                    'cantidad' => count($results)
+                ];
+            }
+
+            // Add the results for the scholarship to the scholarshipResults array
+            $scholarshipResults[] = [
+                'scholarshipId' => $scholarshipId,
+                'monthlyResults' => $monthlyResults
+            ];
+        }
+
+        // Return results as JSON
+        return response()->json($scholarshipResults);
+    }
 }

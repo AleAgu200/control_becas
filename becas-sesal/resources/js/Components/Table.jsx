@@ -21,6 +21,15 @@ const Table = ({ data }) => {
                 ),
                 accessor: "identidad",
                 Filter: DefaultColumnFilter,
+                Cell: ({ value }) => (
+                    <div className="text-left">
+                        <a
+                            href={`http://localhost:8000/getStudent?identidad=${value}`}
+                        >
+                            {value}
+                        </a>
+                    </div>
+                ),
             },
             {
                 Header: () => (

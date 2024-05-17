@@ -21,7 +21,7 @@ export default function Authenticated({ user, header, children }) {
                                 </Link>
                             </div>
 
-                            {/*                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            {/*                             <div className="hidden space-x-8 py-5 sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("dashboard")}
                                     active={route().current("dashboard")}
@@ -29,7 +29,7 @@ export default function Authenticated({ user, header, children }) {
                                     Dashboard
                                 </NavLink>
                             </div> */}
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden space-x-8 py-5 sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("becas")}
                                     active={route().current("becas")}
@@ -37,7 +37,7 @@ export default function Authenticated({ user, header, children }) {
                                     Erogacion de Becas
                                 </NavLink>
                             </div>
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden space-x-8 py-5 sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("beneficiarios")}
                                     active={route().current("beneficiarios")}
@@ -45,7 +45,7 @@ export default function Authenticated({ user, header, children }) {
                                     Beneficiarios
                                 </NavLink>
                             </div>
-                            {/*                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            {/*                             <div className="hidden space-x-8 py-5 sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("centros")}
                                     active={route().current("centros")}
@@ -53,7 +53,7 @@ export default function Authenticated({ user, header, children }) {
                                     Centros de Estudio
                                 </NavLink>
                             </div> */}
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden space-x-8 py-5 sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route("agregar")}
                                     active={route().current("agregar")}
@@ -157,7 +157,7 @@ export default function Authenticated({ user, header, children }) {
                         " sm:hidden"
                     }
                 >
-                    <div className="pt-2 pb-3 space-y-1">
+                    <div className="pt-2 pb-3 space-y-1 mt-5">
                         <ResponsiveNavLink
                             href={route("dashboard")}
                             active={route().current("dashboard")}

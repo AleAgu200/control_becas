@@ -43,6 +43,9 @@ Route::get('/scholarships', [reportesController::class, 'getScholarshipReport'])
 Route::get('/getTotalcholarshipReport', [reportesController::class, 'getTotalcholarshipReport']);
 Route::get('/getTotalcholarshipReportWihoutID', [reportesController::class, 'getTotalcholarshipReportWihoutID']);
 Route::get('/getTotalMonthlyReport', [reportesController::class, 'getTotalMonthlyReport']);
+Route::get('/getTotalMonthlyReportByScholarship', [reportesController::class, 'getTotalMonthlyReportByScholarship']);
+Route::get('/allBecas', [BecaController::class, 'allBecas']);
+Route::get('/getStudent', [EstudianteController::class, 'getStudent']);
 
 
 Route::middleware('auth')->group(function () {

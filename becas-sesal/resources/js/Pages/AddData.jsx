@@ -24,17 +24,17 @@ const AddData = ({ auth }) => {
                         <Tabs defaultValue="account" className="w-[400px] ">
                             <TabsList className="rounded">
                                 <TabsTrigger value="account">
-                                    Agregar Estudiante
+                                    Agregar Beneficiario
                                 </TabsTrigger>
-                                <TabsTrigger value="password">
+                                <TabsTrigger value="centro">
                                     Agregar Centro
                                 </TabsTrigger>
                             </TabsList>
                             <TabsContent className="" value="account">
                                 <CreateStudent />
                             </TabsContent>
-                            <TabsContent value="password">
-                                Change your password here.
+                            <TabsContent value="centro">
+                                <CreateCentro id_usuario={auth.user.id} />
                             </TabsContent>
                         </Tabs>
                     </div>
@@ -131,7 +131,7 @@ function CreateStudent() {
     const submit = (e) => {
         e.preventDefault();
 
-        post(route("estudiantes.store")); // Adjust this to your actual route
+        post(route("Beneficiarios.store")); // Adjust this to your actual route
     };
 
     return (
@@ -176,11 +176,82 @@ function CreateStudent() {
                     href={route("beneficiarios")}
                     className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                    Back to Students
+                    Volver al listado de beneficiarios
                 </Link>
 
                 <PrimaryButton className="ms-4" disabled={processing}>
-                    Create Student
+                    Registrar Beneficiario
+                </PrimaryButton>
+            </div>
+        </form>
+    );
+}
+
+function CreateCentro({ id_usuario }) {
+    console.log("🚀 ~ CreateCentro ~ id_usuario:", id_usuario);
+    const { data, setData, post, processing, errors, reset } = useForm({
+        id_usuario: id_usuario,
+        nombre: "",
+        direccion: "",
+        telefono: "",
+        correo: "",
+        agente_usuario: navigator.userAgent,
+        carga_util: "",
+        ultima_actividad: Date.now(),
+        director_centro: "",
+    });
+
+    const formFields = {
+        nombre: { type: "text", label: "Nombre del centro" },
+        director_centro: {
+            type: "text",
+            label: "Nombre del director del centro",
+        },
+        direccion: { type: "text", label: "Direccion" },
+        telefono: { type: "tel", label: "Telefono" },
+        correo: { type: "email", label: "Correo" },
+    };
+
+    useEffect(() => {
+        return () => {
+            reset();
+        };
+    }, []);
+
+    const submit = (e) => {
+        e.preventDefault();
+
+        post(route("Centros.store")); // Adjust this to your actual route
+    };
+
+    return (
+        <form onSubmit={submit}>
+            {Object.keys(formFields).map((key) => (
+                <div key={key}>
+                    <InputLabel htmlFor={key} value={formFields[key].label} />
+                    <TextInput
+                        id={key}
+                        type={formFields[key].type}
+                        name={key}
+                        value={data[key]}
+                        className="mt-1 block w-full"
+                        onChange={(e) => setData(key, e.target.value)}
+                        required
+                    />
+                    <InputError message={errors[key]} className="mt-2" />
+                </div>
+            ))}
+
+            <div className="flex items-center justify-end mt-4">
+                <Link
+                    href={route("centros")}
+                    className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Volver al listado de centros
+                </Link>
+
+                <PrimaryButton className="ms-4" disabled={processing}>
+                    Registrar Centro
                 </PrimaryButton>
             </div>
         </form>

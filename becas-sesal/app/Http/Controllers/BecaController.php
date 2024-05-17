@@ -65,4 +65,10 @@ class BecaController extends Controller
         // Redirect back to the scholarship list page
         return redirect()->route('becas.index');
     }
+
+    public function allBecas()
+    {
+        $becas = Beca::all();
+        return $becas;
+    }
 }

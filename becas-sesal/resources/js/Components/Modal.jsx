@@ -1,7 +1,13 @@
-import { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
+import { Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 
-export default function Modal({ children, show = false, maxWidth = '2xl', closeable = true, onClose = () => {} }) {
+export default function Modal({
+    children,
+    show = false,
+    maxWidth = "2xl",
+    closeable = true,
+    onClose = () => {},
+}) {
     const close = () => {
         if (closeable) {
             onClose();
@@ -9,11 +15,11 @@ export default function Modal({ children, show = false, maxWidth = '2xl', closea
     };
 
     const maxWidthClass = {
-        sm: 'sm:max-w-sm',
-        md: 'sm:max-w-md',
-        lg: 'sm:max-w-lg',
-        xl: 'sm:max-w-xl',
-        '2xl': 'sm:max-w-2xl',
+        sm: "sm:max-w-sm",
+        md: "sm:max-w-md",
+        lg: "sm:max-w-lg",
+        xl: "sm:max-w-xl",
+        "2xl": "sm:max-w-2xl",
     }[maxWidth];
 
     return (
@@ -24,7 +30,7 @@ export default function Modal({ children, show = false, maxWidth = '2xl', closea
                 className="fixed inset-0 flex overflow-y-auto px-4 py-6 sm:px-0 items-center z-50 transform transition-all"
                 onClose={close}
             >
-                <Transition.Child
+                <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0"
@@ -34,9 +40,9 @@ export default function Modal({ children, show = false, maxWidth = '2xl', closea
                     leaveTo="opacity-0"
                 >
                     <div className="absolute inset-0 bg-gray-500/75" />
-                </Transition.Child>
+                </TransitionChild>
 
-                <Transition.Child
+                <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -50,7 +56,7 @@ export default function Modal({ children, show = false, maxWidth = '2xl', closea
                     >
                         {children}
                     </Dialog.Panel>
-                </Transition.Child>
+                </TransitionChild>
             </Dialog>
         </Transition>
     );

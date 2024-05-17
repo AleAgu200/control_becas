@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Imports\EstudianteImport;
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EstudianteController extends Controller
 {
@@ -50,6 +52,27 @@ class EstudianteController extends Controller
         }
 
         // Redirect back to the student list page
+        return redirect()->route('beneficiarios');
+    }
+
+    public function getStudent(Request $request)
+    {
+        $data = $request->validate([
+            'identidad' => 'required|string|max:13|regex:/^[0-9]{4}[0-9]{4}[0-9]{5}$/',
+        ]);
+
+        $estudiante = Estudiante::where('identidad', $data['identidad'])->with('beca')->first();
+        if ($estudiante) {
+            return Inertia::render('Beneficiario', [
+                'estudiante' => $estudiante
+            ]);
+        } else {
+            return response()->json(['error' => 'Estudiante no encontrado'], 404);
+        }
+    }
+
+    public function import(){
+        Excel::import(new EstudianteImport, request()->file('file'));
         return redirect()->route('beneficiarios');
     }
 }

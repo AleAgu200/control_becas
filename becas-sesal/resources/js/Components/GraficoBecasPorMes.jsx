@@ -21,6 +21,7 @@ import {
     CardContent,
     CardFooter,
 } from "./ui/card";
+import Spinner from "./Spinner";
 
 const GraficoBecasPorMes = ({ beca, date1, date2 }) => {
     const formatDate = (date) => {
@@ -57,7 +58,7 @@ const GraficoBecasPorMes = ({ beca, date1, date2 }) => {
     }, [beca, date1, date2]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <Spinner />;
     }
 
     return (

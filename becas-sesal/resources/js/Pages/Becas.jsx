@@ -21,7 +21,8 @@ import {
     fetchReportOnlyDates,
     fetchReportV2,
 } from "@/utils/fetchreports";
-import GraficoBecasPorMes from "@/Components/GraficoBecasPorMes";
+import MonthsReports from "@/Components/MonthsReports";
+import GraficoMesYBeca from "@/Components/GraficoMesYBeca";
 const Becas = ({ auth, becas, estudiantes }) => {
     const [date1, setDate1] = React.useState(
         new Date(
@@ -183,6 +184,8 @@ const Becas = ({ auth, becas, estudiantes }) => {
                     montoEjecutar={reporte?.total}
                 />
                 <SimpleTable data={reporte}></SimpleTable>
+                <MonthsReports />
+                <GraficoMesYBeca />
             </div>
         </AuthenticatedLayout>
     );

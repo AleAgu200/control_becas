@@ -13,6 +13,7 @@ import {
     TabsList,
     TabsTrigger,
 } from "../Components/ui/tabs";
+import FileInput from "../Components/FileInput";
 
 const AddData = ({ auth }) => {
     return (
@@ -29,7 +30,13 @@ const AddData = ({ auth }) => {
                                 <TabsTrigger value="centro">
                                     Agregar Centro
                                 </TabsTrigger>
+                                <TabsTrigger value="file">
+                                    Agregar Beneficiarios desde archivo
+                                </TabsTrigger>
                             </TabsList>
+                            <TabsContent value="file">
+                                <FileInput />
+                            </TabsContent>
                             <TabsContent className="" value="account">
                                 <CreateStudent />
                             </TabsContent>
@@ -136,40 +143,46 @@ function CreateStudent() {
 
     return (
         <form onSubmit={submit}>
-            {Object.keys(formFields).map((key) => (
-                <div key={key}>
-                    <InputLabel htmlFor={key} value={formFields[key].label} />
-
-                    {formFields[key].type === "select" ? (
-                        <select
-                            id={key}
-                            name={key}
-                            value={data[key]}
-                            className="mt-1 block w-full rounded"
-                            onChange={(e) => setData(key, e.target.value)}
-                            required
-                        >
-                            {formFields[key].options.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    ) : (
-                        <TextInput
-                            id={key}
-                            type={formFields[key].type}
-                            name={key}
-                            value={data[key]}
-                            className="mt-1 block w-full"
-                            onChange={(e) => setData(key, e.target.value)}
-                            required
+            <div>
+                {Object.keys(formFields).map((key) => (
+                    <div key={key}>
+                        <InputLabel
+                            htmlFor={key}
+                            value={formFields[key].label}
                         />
-                    )}
-
-                    <InputError message={errors[key]} className="mt-2" />
-                </div>
-            ))}
+                        {formFields[key].type === "select" ? (
+                            <select
+                                id={key}
+                                name={key}
+                                value={data[key]}
+                                className="mt-1 block w-full rounded"
+                                onChange={(e) => setData(key, e.target.value)}
+                                required
+                            >
+                                {formFields[key].options.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <TextInput
+                                id={key}
+                                type={formFields[key].type}
+                                name={key}
+                                value={data[key]}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData(key, e.target.value)}
+                                required
+                            />
+                        )}
+                        <InputError message={errors[key]} className="mt-2" />
+                    </div>
+                ))}
+            </div>
 
             <div className="flex items-center justify-end mt-4">
                 <Link

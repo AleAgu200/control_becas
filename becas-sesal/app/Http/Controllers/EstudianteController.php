@@ -15,8 +15,14 @@ class EstudianteController extends Controller
     public function index()
     {
         $becarios = Estudiante::with('beca')->get()->map(function ($estudiante) {
-            $estudiante['tipo_de_beca'] = $estudiante->beca->tipo_de_beca;
-            $estudiante['monto_de_la_beca'] = $estudiante->beca->monto_de_la_beca;
+            if ($estudiante->beca !== null) {
+                $estudiante['tipo_de_beca'] = $estudiante->beca->tipo_de_beca;
+                $estudiante['monto_de_la_beca'] = $estudiante->beca->monto_de_la_beca;
+            } else {
+                // Handle the case where $estudiante->beca is null
+                $estudiante['tipo_de_beca'] = 'N/A';
+                $estudiante['monto_de_la_beca'] = 'N/A';
+            }
             return $estudiante;
         });
         return Inertia::render('Beneficiarios', ['becarios' => $becarios]);
@@ -71,8 +77,39 @@ class EstudianteController extends Controller
         }
     }
 
-    public function import(){
+    public function import()
+    {
+
         Excel::import(new EstudianteImport, request()->file('file'));
         return redirect()->route('beneficiarios');
+    }
+
+    public function updateEstudiante($identidad)
+    {
+        // Check if the student exists
+        $estudiante = Estudiante::where('identidad', $identidad)->first();
+        if (!$estudiante) {
+            return response()->json(['error' => 'Estudiante no encontrado'], 404);
+        }
+
+        $data = request()->validate([
+            'nombres' => 'required|string|max:255',
+            'apellidos' => 'required|string|max:255',
+            'identidad' => 'required|string|max:13|regex:/^[0-9]{4}[0-9]{4}[0-9]{5}$/',
+            'carnet' => 'nullable|string|max:255',
+            'correo' => 'required|string|email|max:255',
+            'telefono' => 'required|string|max:255',
+            'direccion' => 'required|string|max:255',
+            'estado' => 'required|numeric|max:1',
+            'id_beca' => 'required|exists:becas,id',
+            'centro_de_estudio_id' => 'required|numeric',
+            'fecha_de_inicio' => 'required|date',
+            'fecha_de_finalizacion' => 'required|date',
+        ]);
+
+        $estudiante->update($data);
+
+        // Return the updated student
+        return response()->json($estudiante, 200);
     }
 }

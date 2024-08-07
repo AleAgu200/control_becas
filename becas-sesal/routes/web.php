@@ -46,6 +46,11 @@ Route::get('/getTotalMonthlyReport', [reportesController::class, 'getTotalMonthl
 Route::get('/getTotalMonthlyReportByScholarship', [reportesController::class, 'getTotalMonthlyReportByScholarship']);
 Route::get('/allBecas', [BecaController::class, 'allBecas']);
 Route::get('/getStudent', [EstudianteController::class, 'getStudent']);
+Route::put('/updateStudent/{identidad}', [EstudianteController::class, 'updateEstudiante']);
+
+Route::middleware('auth')->group(function () {
+    Route::post('/api/uploadexcelimport', [EstudianteController::class, 'import'])->name('import');
+});
 
 
 Route::middleware('auth')->group(function () {

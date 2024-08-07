@@ -39,7 +39,7 @@ const MonthsReports = () => {
     return isLoading ? (
         <Spinner></Spinner>
     ) : (
-        <div className="h-[100dvh] m-4">
+        <div className="h-[100dvh] m-20">
             <h1 className="text-center text-xl font-bold mt-5">
                 Reporte Mensual
             </h1>

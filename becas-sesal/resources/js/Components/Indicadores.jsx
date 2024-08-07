@@ -63,7 +63,7 @@ export default function Indicadores({
                 </CardHeader>
                 <CardContent className="flex items-center gap-4">
                     <div className="flex flex-col items-center">
-                        <div className="font-semibold">
+                        <div className="font-semibold text-green-500">
                             {" "}
                             {new Intl.NumberFormat("en-US", {
                                 style: "currency",

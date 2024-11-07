@@ -24,7 +24,7 @@ const Table = ({ data }) => {
                 Cell: ({ value }) => (
                     <div className="text-left">
                         <a
-                            href={`http://localhost:8000/getStudent?identidad=${value}`}
+                            href={`/getStudent?identidad=${value}`}
                         >
                             {value}
                         </a>

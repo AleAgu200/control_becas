@@ -45,7 +45,7 @@ const Beneficiario = ({ estudiante, auth }) => {
             console.log("Payload:", payload); // Log the payload to check what is being sent
 
             const response = await axios.put(
-                `http://localhost:8000/updateStudent/${identidad}`, // Use identidad as the correct identifier
+                `/updateStudent/${identidad}`, // Use identidad as the correct identifier
                 payload,
                 {
                     headers: {

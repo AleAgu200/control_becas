@@ -296,26 +296,26 @@ class reportesController extends Controller
         $start_date = $request->input('start_date', '2023-01-01'); // Default if not provided
         $end_date = $request->input('end_date', '2024-02-29'); // Default if not provided
         $beca_id = $request->input('scholarship_id'); // Retrieve the 'scholarship_id' parameter
-
-        // Perform the query using Query Builder with raw SQL for julianday calculations
+    
+        // Perform the query using Query Builder with MySQL-compatible date functions
         $results = DB::table('estudiantes')
             ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
             ->select(
                 'estudiantes.*',
-                DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375) AS months"),
-                DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375)) * becas.monto_de_la_beca AS total")
+                DB::raw("(DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), GREATEST(fecha_de_inicio, '$start_date')) / 30.4375) AS months"),
+                DB::raw("LEAST(12, (DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), GREATEST(fecha_de_inicio, '$start_date')) / 30.4375)) * becas.monto_de_la_beca AS total")
             )
             ->where('fecha_de_inicio', '>=', $start_date)
             ->where('fecha_de_inicio', '<=', $end_date)
             ->where('estudiantes.id_beca', $beca_id) // Filter by 'beca'
             ->get();
-
+    
         /* calculate the whole amount */
         $total = 0;
         foreach ($results as $result) {
             $total += $result->total;
         }
-
+    
         // Return results as JSON
         return response()->json([
             'results' => $results,
@@ -323,31 +323,32 @@ class reportesController extends Controller
             'cantidad' => count($results)
         ]);
     }
-
+    
     public function getTotalcholarshipReportWihoutID(Request $request)
     {
         // Retrieve query parameters
         $start_date = $request->input('start_date', '2023-01-01'); // Default if not provided
         $end_date = $request->input('end_date', '2024-02-29'); // Default if not provided
-
-        // Perform the query using Query Builder with raw SQL for julianday calculations
+    
+        // Perform the query using Query Builder with MySQL-compatible date functions
         $results = DB::table('estudiantes')
             ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
             ->select(
                 'estudiantes.*',
-                DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375) AS months"),
-                DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(fecha_de_inicio)) / 30.4375)) * becas.monto_de_la_beca AS total")
+                DB::raw("(DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), fecha_de_inicio) / 30.4375) AS months"),
+                DB::raw("LEAST(12, (DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), fecha_de_inicio) / 30.4375)) * becas.monto_de_la_beca AS total")
             )
-            ->where('fecha_de_inicio', '>=', $start_date)
             ->where('fecha_de_inicio', '<=', $end_date)
+            ->where('fecha_de_finalizacion', '>=', $start_date)
+            ->where('estudiantes.estado', 0)
             ->get();
-
+    
         /* calculate the whole amount */
         $total = 0;
         foreach ($results as $result) {
             $total += $result->total;
         }
-
+    
         // Return results as JSON
         return response()->json([
             'results' => $results,
@@ -355,38 +356,39 @@ class reportesController extends Controller
             'cantidad' => count($results)
         ]);
     }
-
     public function getTotalMonthlyReport(Request $request)
     {
         // Retrieve query parameters
         $year = $request->input('year', date('Y')); // Default to current year if not provided
         // Initialize an array to hold the results for each month
         $monthlyResults = [];
-
+    
         // Loop over each month
         for ($month = 1; $month <= 12; $month++) {
             // Calculate the start and end dates for the month
             $start_date = date('Y-m-01', strtotime("$year-$month-01"));
             $end_date = date('Y-m-t', strtotime("$year-$month-01"));
-
-            // Perform the query using Query Builder with raw SQL for julianday calculations
+    
+            // Perform the query using Query Builder with MySQL-compatible date functions
             $results = DB::table('estudiantes')
                 ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
                 ->select(
                     'estudiantes.*',
-                    DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(MAX(fecha_de_inicio, '$start_date'))) / 30.4375) AS months"),
-                    DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(MAX(fecha_de_inicio, '$start_date'))) / 30.4375)) * becas.monto_de_la_beca AS total")
+                    DB::raw("(DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), GREATEST(fecha_de_inicio, '$start_date')) / 30.4375) AS months"),
+                    DB::raw("LEAST(12, (DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), GREATEST(fecha_de_inicio, '$start_date')) / 30.4375)) * becas.monto_de_la_beca AS total")
                 )
                 ->where('fecha_de_inicio', '<=', $end_date)
                 ->where('fecha_de_finalizacion', '>=', $start_date)
-                ->get();
+                ->where('estudiantes.estado', 0)
 
+                ->get();
+    
             /* calculate the whole amount */
             $total = 0;
             foreach ($results as $result) {
                 $total += $result->total;
             }
-
+    
             // Add the results for the month to the monthlyResults array
             $monthlyResults[] = [
                 'month' => $month,
@@ -395,51 +397,55 @@ class reportesController extends Controller
                 'cantidad' => count($results)
             ];
         }
-
+    
         // Return results as JSON
         return response()->json($monthlyResults);
     }
+
+    
     public function getTotalMonthlyReportByScholarship(Request $request)
     {
         // Retrieve query parameters
         $year = $request->input('year', date('Y')); // Default to current year if not provided
-
+    
         // Retrieve all scholarship ids
         $scholarshipIds = DB::table('becas')->pluck('id');
-
+    
         // Initialize an array to hold the results for each scholarship
         $scholarshipResults = [];
-
+    
         // Loop over each scholarship
         foreach ($scholarshipIds as $scholarshipId) {
             // Initialize an array to hold the results for each month
             $monthlyResults = [];
-
+    
             // Loop over each month
             for ($month = 1; $month <= 12; $month++) {
                 // Calculate the start and end dates for the month
                 $start_date = date('Y-m-01', strtotime("$year-$month-01"));
                 $end_date = date('Y-m-t', strtotime("$year-$month-01"));
-
-                // Perform the query using Query Builder with raw SQL for julianday calculations
+    
+                // Perform the query using Query Builder with MySQL-compatible date functions
                 $results = DB::table('estudiantes')
                     ->leftJoin('becas', 'estudiantes.id_beca', '=', 'becas.id')
                     ->select(
                         'estudiantes.*',
-                        DB::raw("((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(MAX(fecha_de_inicio, '$start_date'))) / 30.4375) AS months"),
-                        DB::raw("MIN(12, ((julianday(MIN(fecha_de_finalizacion, '$end_date')) - julianday(MAX(fecha_de_inicio, '$start_date'))) / 30.4375)) * becas.monto_de_la_beca AS total")
+                        DB::raw("(DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), GREATEST(fecha_de_inicio, '$start_date')) / 30.4375) AS months"),
+                        DB::raw("LEAST(12, (DATEDIFF(LEAST(fecha_de_finalizacion, '$end_date'), GREATEST(fecha_de_inicio, '$start_date')) / 30.4375)) * becas.monto_de_la_beca AS total")
                     )
                     ->where('fecha_de_inicio', '<=', $end_date)
                     ->where('fecha_de_finalizacion', '>=', $start_date)
                     ->where('estudiantes.id_beca', $scholarshipId)
-                    ->get();
+                    ->where('estudiantes.estado', 0)
 
+                    ->get();
+    
                 /* calculate the whole amount */
                 $total = 0;
                 foreach ($results as $result) {
                     $total += $result->total;
                 }
-
+    
                 // Add the results for the month to the monthlyResults array
                 $monthlyResults[] = [
                     'month' => $month,
@@ -448,14 +454,14 @@ class reportesController extends Controller
                     'cantidad' => count($results)
                 ];
             }
-
+    
             // Add the results for the scholarship to the scholarshipResults array
             $scholarshipResults[] = [
                 'scholarshipId' => $scholarshipId,
                 'monthlyResults' => $monthlyResults
             ];
         }
-
+    
         // Return results as JSON
         return response()->json($scholarshipResults);
     }

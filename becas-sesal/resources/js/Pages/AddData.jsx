@@ -27,9 +27,9 @@ const AddData = ({ auth }) => {
                                 <TabsTrigger value="account">
                                     Agregar Beneficiario
                                 </TabsTrigger>
-                                <TabsTrigger value="centro">
+{/*                                 <TabsTrigger value="centro">
                                     Agregar Centro
-                                </TabsTrigger>
+                                </TabsTrigger> */}
                                 <TabsTrigger value="file">
                                     Agregar Beneficiarios desde archivo
                                 </TabsTrigger>
@@ -138,7 +138,7 @@ function CreateStudent() {
     const submit = (e) => {
         e.preventDefault();
 
-        post(route("Beneficiarios.store")); // Adjust this to your actual route
+        post(route("estudiantes.registrar")); // Adjust this to your actual route
     };
 
     return (
@@ -209,7 +209,7 @@ function CreateCentro({ id_usuario }) {
         telefono: "",
         correo: "",
         agente_usuario: navigator.userAgent,
-        carga_util: "",
+        carga_util: "xxxx",
         ultima_actividad: Date.now(),
         director_centro: "",
     });
@@ -234,7 +234,7 @@ function CreateCentro({ id_usuario }) {
     const submit = (e) => {
         e.preventDefault();
 
-        post(route("Centros.store")); // Adjust this to your actual route
+        post(route("centros.registrar")); // Adjust this to your actual route
     };
 
     return (

@@ -54,7 +54,7 @@ export default function Indicadores({
                     <UsersIcon className="w-8 h-8" />
                 </CardContent>
             </Card>
-            <Card className="shadow-md grid gap-1 w-1/4 pt-1">
+{/*             <Card className="shadow-md grid gap-1 w-1/4 pt-1">
                 <CardHeader>
                     <CardTitle>Ejecución a la fecha</CardTitle>
                     <CardDescription>
@@ -77,7 +77,7 @@ export default function Indicadores({
                         <div className="font-semibold">{ejecucion}</div>
                     </div>
                 </CardContent>
-            </Card>
+            </Card> */}
         </div>
     );
 }

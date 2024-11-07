@@ -1,0 +1,1 @@
+import{j as t,Y as s}from"./app-EnW4PK3H.js";import{A as e}from"./AuthenticatedLayout-SE1KVi27.js";import"./ApplicationLogo-C3MD-vRq.js";import"./transition-kOZBCvKV.js";const m=({auth:r})=>t.jsxs(e,{user:r.user,children:[t.jsx(s,{title:"Centros de Estudio"}),t.jsx("div",{children:"Centros"})]});export{m as default};
